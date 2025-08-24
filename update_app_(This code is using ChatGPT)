@@ -1,0 +1,152 @@
+#This code is using ChatGPT.
+
+import tkinter as tk
+from tkinter import messagebox
+import os
+
+# file name to store tasks
+FILE_NAME = "tasks.txt"
+
+# dictionary to store 10 tasks
+stordg_tasks = {i: "" for i in range(1, 11)}
+
+# save tasks to file
+def save_tasks():
+    with open(FILE_NAME, "w", encoding="utf-8") as f:
+        for i in range(1, 11):
+            f.write(stordg_tasks[i] + "\n")
+
+# load tasks from file
+def load_tasks():
+    if os.path.exists(FILE_NAME):
+        with open(FILE_NAME, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+            for i in range(1, 11):
+                if i <= len(lines):
+                    stordg_tasks[i] = lines[i - 1].strip()
+                else:
+                    stordg_tasks[i] = ""
+
+# update listbox with current tasks
+def update_listbox():
+    listbox_task.delete(0, tk.END)
+    for i in range(1, 11):
+        task = stordg_tasks[i]
+        if task == "":
+            listbox_task.insert(tk.END, f"{i}. [empty]")
+        else:
+            listbox_task.insert(tk.END, f"{i}. {task}")
+    save_tasks()
+
+# add a new task
+def add_task():
+    task = entry_task.get()
+    num = entry_number.get()
+
+    if task == "" or num == "":
+        messagebox.showwarning("warning!", "please enter task and number")
+        return
+
+    try:
+        num = int(num)
+    except:
+        messagebox.showwarning("warning!", "number must be between 1 and 10")
+        return
+
+    if num < 1 or num > 10:
+        messagebox.showwarning("warning!", "number must be between 1 and 10")
+        return
+
+    stordg_tasks[num] = task
+    update_listbox()
+    messagebox.showinfo("added", f"task added at position {num}")
+    entry_task.delete(0, tk.END)
+    entry_number.delete(0, tk.END)
+
+# delete a task
+def delete_task():
+    selection = listbox_task.curselection()
+    if not selection:
+        messagebox.showwarning("warning!", "please select a task to delete")
+        return
+
+    index = selection[0] + 1
+    stordg_tasks[index] = ""
+    update_listbox()
+    messagebox.showinfo("deleted", f"task {index} deleted")
+
+# mark a task as completed
+def mark_completed():
+    selection = listbox_task.curselection()
+    if not selection:
+        messagebox.showwarning("warning!", "please select a task to mark completed")
+        return
+
+    index = selection[0] + 1
+    task = stordg_tasks[index]
+    if task != "" and not task.endswith(" ✔"):
+        stordg_tasks[index] = task + " ✔"
+        update_listbox()
+
+# clear all tasks
+def clear_all():
+    for i in range(1, 11):
+        stordg_tasks[i] = ""
+    update_listbox()
+    messagebox.showinfo("cleared", "all tasks cleared")
+
+# exit the app
+def exit_app():
+    save_tasks()
+    root.quit()
+
+# create main window
+root = tk.Tk()
+root.title("to-do list app (10 tasks)")
+root.geometry("500x550")
+root.configure(bg="#2c3e50")  # dark background
+
+# style settings
+font_main = ("Arial", 12)
+btn_style = {"font": ("Arial", 11, "bold"), "width": 15, "pady": 5}
+
+# frame for input
+frame_input = tk.Frame(root, bg="#2c3e50")
+frame_input.pack(pady=10)
+
+tk.Label(frame_input, text="enter task:", font=font_main, fg="white", bg="#2c3e50").grid(row=0, column=0, padx=5)
+entry_task = tk.Entry(frame_input, width=30, font=font_main)
+entry_task.grid(row=0, column=1)
+
+tk.Label(frame_input, text="task number (1-10):", font=font_main, fg="white", bg="#2c3e50").grid(row=1, column=0, padx=5, pady=5)
+entry_number = tk.Entry(frame_input, width=10, font=font_main)
+entry_number.grid(row=1, column=1, pady=5)
+
+# frame for buttons
+frame_buttons = tk.Frame(root, bg="#2c3e50")
+frame_buttons.pack(pady=10)
+
+btn_add = tk.Button(frame_buttons, text="add task", command=add_task, bg="#27ae60", fg="white", **btn_style)
+btn_add.grid(row=0, column=0, padx=5, pady=5)
+
+btn_delete = tk.Button(frame_buttons, text="delete task", command=delete_task, bg="#e74c3c", fg="white", **btn_style)
+btn_delete.grid(row=0, column=1, padx=5, pady=5)
+
+btn_mark = tk.Button(frame_buttons, text="mark completed", command=mark_completed, bg="#f39c12", fg="white", **btn_style)
+btn_mark.grid(row=1, column=0, padx=5, pady=5)
+
+btn_clear = tk.Button(frame_buttons, text="clear all", command=clear_all, bg="#9b59b6", fg="white", **btn_style)
+btn_clear.grid(row=1, column=1, padx=5, pady=5)
+
+btn_exit = tk.Button(root, text="exit", command=exit_app, bg="#34495e", fg="white", **btn_style)
+btn_exit.pack(pady=10)
+
+# listbox to show tasks
+listbox_task = tk.Listbox(root, width=50, height=15, font=("Consolas", 12), bg="#ecf0f1", fg="#2c3e50")
+listbox_task.pack(pady=10)
+
+# load tasks at startup
+load_tasks()
+update_listbox()
+
+root.mainloop()
