@@ -1,4 +1,4 @@
-# to-day-list-python
+# to-do-list-python
 print("__________________________________")
 print("------------to do list app--------")
 print("----------------------------------")
