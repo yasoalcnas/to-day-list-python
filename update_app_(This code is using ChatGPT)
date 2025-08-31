@@ -1,19 +1,19 @@
-#This code is using ChatGPT.
-
 import tkinter as tk
 from tkinter import messagebox
 import os
+
+maxtasks = 11
 
 # file name to store tasks
 FILE_NAME = "tasks.txt"
 
 # dictionary to store 10 tasks
-stordg_tasks = {i: "" for i in range(1, 11)}
+stordg_tasks = {i: "" for i in range(1, maxtasks)}
 
 # save tasks to file
 def save_tasks():
     with open(FILE_NAME, "w", encoding="utf-8") as f:
-        for i in range(1, 11):
+        for i in range(1, maxtasks):
             f.write(stordg_tasks[i] + "\n")
 
 # load tasks from file
@@ -21,7 +21,7 @@ def load_tasks():
     if os.path.exists(FILE_NAME):
         with open(FILE_NAME, "r", encoding="utf-8") as f:
             lines = f.readlines()
-            for i in range(1, 11):
+            for i in range(1, maxtasks):
                 if i <= len(lines):
                     stordg_tasks[i] = lines[i - 1].strip()
                 else:
@@ -30,7 +30,7 @@ def load_tasks():
 # update listbox with current tasks
 def update_listbox():
     listbox_task.delete(0, tk.END)
-    for i in range(1, 11):
+    for i in range(1, maxtasks):
         task = stordg_tasks[i]
         if task == "":
             listbox_task.insert(tk.END, f"{i}. [empty]")
@@ -84,13 +84,13 @@ def mark_completed():
 
     index = selection[0] + 1
     task = stordg_tasks[index]
-    if task != "" and not task.endswith(" ✔"):
-        stordg_tasks[index] = task + " ✔"
+    if task != "" and not task.endswith("   ✔"):
+        stordg_tasks[index] = task + "   ✔"
         update_listbox()
 
 # clear all tasks
 def clear_all():
-    for i in range(1, 11):
+    for i in range(1, maxtasks):
         stordg_tasks[i] = ""
     update_listbox()
     messagebox.showinfo("cleared", "all tasks cleared")
@@ -102,7 +102,7 @@ def exit_app():
 
 # create main window
 root = tk.Tk()
-root.title("to-do list app (10 tasks)")
+root.title("Manager Tasks")
 root.geometry("500x550")
 root.configure(bg="#2c3e50")  # dark background
 
@@ -114,11 +114,11 @@ btn_style = {"font": ("Arial", 11, "bold"), "width": 15, "pady": 5}
 frame_input = tk.Frame(root, bg="#2c3e50")
 frame_input.pack(pady=10)
 
-tk.Label(frame_input, text="enter task:", font=font_main, fg="white", bg="#2c3e50").grid(row=0, column=0, padx=5)
+tk.Label(frame_input, text="Enter Task:", font=font_main, fg="white", bg="#2c3e50").grid(row=0, column=0, padx=5)
 entry_task = tk.Entry(frame_input, width=30, font=font_main)
 entry_task.grid(row=0, column=1)
 
-tk.Label(frame_input, text="task number (1-10):", font=font_main, fg="white", bg="#2c3e50").grid(row=1, column=0, padx=5, pady=5)
+tk.Label(frame_input, text="Task Number (1-10):", font=font_main, fg="white", bg="#2c3e50").grid(row=1, column=0, padx=5, pady=5)
 entry_number = tk.Entry(frame_input, width=10, font=font_main)
 entry_number.grid(row=1, column=1, pady=5)
 
